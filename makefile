@@ -1,6 +1,6 @@
 CXXFLAGS := -g -Wall -std=c++11 -lm
 CXX=g++
-MY_OBJECTS= network.o socket.o client.o message.o
+MY_OBJECTS= network.o socket.o client.o message_header.o room_list.o bit_ops.o
 
 all: test
 

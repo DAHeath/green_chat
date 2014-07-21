@@ -1,4 +1,4 @@
-#include "message.hpp"
+#include "message_header.hpp"
 
 #include <sstream>
 
@@ -6,25 +6,23 @@
 
 using namespace std;
 
-message message::from_string(string s) {
+message_header message_header::from_string(string s) {
   stringstream ss {s};
   auto type = bit::extract8(ss);
   auto flags = bit::extract8(ss);
   auto length = bit::extract16(ss);
   auto address = bit::extract32(ss);
-  auto data = s.substr(8);
-  return message { type, flags, length, address, data };
+  return message_header { type, flags, length, address };
 }
 
-message::message( int t, int f, int l, int a, string d) :
-  type(t), flags(f), length(l), address(a), data(d) { }
+message_header::message_header(uint32_t t, uint32_t f, uint32_t l, uint32_t a) :
+  type(t), flags(f), length(l), address(a) { }
 
-string message::to_string() {
+string message_header::to_string() const {
   ostringstream ss;
   bit::insert8(ss, type);
   bit::insert8(ss, flags);
   bit::insert16(ss, length);
   bit::insert32(ss, address);
-  ss << data;
   return ss.str();
 }
