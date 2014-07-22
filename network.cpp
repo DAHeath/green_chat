@@ -1,5 +1,7 @@
 #include "network.hpp"
 
+#include <netdb.h>
+
 namespace network {
   namespace impl {
 
@@ -40,4 +42,8 @@ namespace network {
     };
 
   };
+
+  const uint32_t interpret_address(std::string address) {
+    return *(unsigned long *)gethostbyname(address.c_str())->h_addr_list[0];
+  }
 };

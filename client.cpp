@@ -1,6 +1,6 @@
 #include "client.hpp"
 
-void client::add_neighbor(std::string ip_address, unsigned int socket) {
+void client::add_neighbor(uint32_t ip_address, unsigned int socket) {
   comm_sockets.push_back(network::socket::connected(ip_address, socket));
 }
 

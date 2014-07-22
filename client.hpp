@@ -13,7 +13,7 @@ class client {
      * Allows a client to establish a connection with another client who there
      * has yet to be any contact with. Bypasses the courier process.
      */
-    void add_neighbor(std::string ip_address, unsigned int socket);
+    void add_neighbor(uint32_t ip_address, unsigned int socket);
 
     void accept();
 

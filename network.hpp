@@ -5,6 +5,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <cstdint>
+#include <string>
 
 namespace network {
   namespace impl {
@@ -21,7 +23,10 @@ namespace network {
     const ssize_t socket_send    (int sockfd, const void *buf, size_t len, int flags);
     const ssize_t socket_receive (int sockfd, void *buf, size_t len, int flags);
 
+
   };
+
+  const uint32_t interpret_address(std::string);
 };
 
 #endif

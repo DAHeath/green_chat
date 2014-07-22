@@ -20,7 +20,7 @@ namespace network {
     return addr;
   }
 
-  const socket socket::connected(const std::string ip_address, const int port) {
+  const socket socket::connected(const uint32_t ip_address, const int port) {
     int s = impl::create_socket();
     impl::socket_address a = build_address(ip_address, port);
     impl::connect_socket(s, (struct sockaddr*)&a, sizeof(a));
@@ -28,11 +28,10 @@ namespace network {
   }
 
   const impl::socket_address socket::build_address(
-      const std::string ip_address, const int port) {
+      const uint32_t ip_address, const int port) {
     impl::socket_address addr;
     addr.sin_family = AF_INET;
-    const struct hostent *a = gethostbyname(ip_address.c_str());
-    addr.sin_addr.s_addr = *((unsigned long *)a->h_addr_list[0]);
+    addr.sin_addr.s_addr = ip_address;
     addr.sin_port = htons(port);
     return addr;
   }

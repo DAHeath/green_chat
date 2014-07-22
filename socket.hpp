@@ -3,6 +3,7 @@
 
 #include <string>
 #include "network.hpp"
+#include <cstdint>
 
 namespace network {
 
@@ -20,7 +21,7 @@ namespace network {
        * Creates a listening connected port. Because there is no outgoing IP
        * address, 
        */
-      static const socket connected(const std::string ip_address, const int port);
+      static const socket connected(const uint32_t ip_address, const int port);
 
       void send(const std::string message) const;
       const std::string receive(const unsigned int length) const;
@@ -34,7 +35,7 @@ namespace network {
     private:
       static const impl::socket_address build_address(const int port);
       static const impl::socket_address build_address(
-          const std::string ip_address, const int port);
+          const uint32_t ip_address, const int port);
 
       socket(const int _s) : s(_s) { };
       const int s;

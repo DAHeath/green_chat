@@ -2,45 +2,59 @@
 #include "client.hpp"
 #include "message_header.hpp"
 #include "room_list.hpp"
+#include "room_query.hpp"
+#include "invite_request.hpp"
 
 #include <iostream>
 #include <cstdint>
-
 #include <assert.h>
-
 #include <sstream>
 
-int main() {
-  /* auto c1 = client(4567); */
-  /* auto c2 = client(5678); */
-  /* auto c3 = client(6789); */
+using namespace std;
 
-  /* c1.add_neighbor("192.168.1.131", 5678); */
-  /* c1.add_neighbor("192.168.1.131", 6789); */
-  /* c2.accept(); */
-  /* c3.accept(); */
+void test_room_list(client c1, client c2, uint32_t addr) {
+  vector<uint64_t> ids { 0x1050, 0x1050105010501050 };
+  vector<string> names { "ROOM1", "ROOM2" };
 
-  /* c1.send("Greetings"); */
-  /* std::cerr << c2.receive() << "\n"; */
-  /* std::cerr << c3.receive() << "\n"; */
+  auto rl = room_list::from_data(addr, ids, names);
+  auto s = rl.to_string();
+  c1.send(s);
+  assert(c2.receive() == s);
+}
 
-  /* c2.send("Yo"); */
-  /* std::cerr << c1.receive() << "\n"; */
+void test_room_query(client c1, client c2, uint32_t addr) {
+  auto rq = room_query::from_address(addr);
+  auto s = rq.to_string();
+  c1.send(s);
+  assert(c2.receive() == s);
+}
 
-  std::string s = "12345678";
-  auto h_rep = message_header::from_string(s).to_string();
-  assert(s.compare(h_rep) == 0);
+void test_invite_request(client c1, client c2, uint32_t addr) {
+  auto rq = invite_request::from_data(addr, 0x1050, "ROOM1");
+  auto s = rq.to_string();
+  c1.send(s);
+  assert(c2.receive() == s);
+}
 
+void run(string address) {
+  uint32_t addr = network::interpret_address(address);
 
-  auto m = message_header::from_string(s);
-  std::vector<uint64_t> ids { 0x1050, 0x1050105010501050 };
-  std::vector<std::string> names { "ROOM1", "ROOM2" };
-  auto rl = room_list(m, ids, names);
+  auto c1 = client(4567);
+  auto c2 = client(5678);
 
-  auto rep = rl.to_string();
-  auto rl2 = room_list::from_string(rep);
+  c1.add_neighbor(addr, 5678);
+  c2.accept();
 
-  assert(rep == rl2.to_string());
+  test_room_list(c1, c2, addr);
+  test_room_query(c1, c2, addr);
+  test_invite_request(c1, c2, addr);
+}
 
-
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    cerr << "Usage: ./test IP_ADDRESS\n";
+  }
+  else {
+    run(argv[1]);
+  }
 }

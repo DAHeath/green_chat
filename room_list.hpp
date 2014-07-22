@@ -1,23 +1,26 @@
 #ifndef ROOM_LIST_HPP
 #define ROOM_LIST_HPP
 
-#include <string>
 #include <vector>
-#include <cstdint>
 
 #include "message_header.hpp"
 
 class room_list {
   public:
     static room_list from_string(std::string);
-    room_list(message_header, std::vector<uint64_t>, std::vector<std::string>);
+    static room_list from_data(
+        uint32_t addr,
+        std::vector<uint64_t> ids,
+        std::vector<std::string> names);
 
     std::string to_string();
 
-    const std::vector<uint64_t> ids;
-    const std::vector<std::string> names;
-    const message_header header;
   private:
+    room_list(message_header, std::vector<uint64_t>, std::vector<std::string>);
+
+    message_header _header;
+    std::vector<uint64_t> _ids;
+    std::vector<std::string> _names;
 };
 
 #endif
