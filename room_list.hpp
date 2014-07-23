@@ -15,6 +15,17 @@ class room_list {
 
     std::string to_string();
 
+    message_header header() const { return _header; }
+    std::vector<uint64_t> ids() const { return _ids; }
+    std::vector<std::string> names() const { return _names; }
+
+    bool operator==(const room_list &other) {
+      return header() == other.header() &&
+             ids()    == other.ids() &&
+             names()  == other.names();
+    }
+    bool operator!=(const room_list &other) { return !(*this==other); }
+
   private:
     room_list(message_header, std::vector<uint64_t>, std::vector<std::string>);
 

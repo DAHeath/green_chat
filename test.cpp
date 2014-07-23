@@ -4,6 +4,9 @@
 #include "room_list.hpp"
 #include "room_query.hpp"
 #include "invite_request.hpp"
+#include "list_update.hpp"
+
+#include "bit_ops.hpp"
 
 #include <iostream>
 #include <cstdint>
@@ -17,23 +20,30 @@ void test_room_list(client c1, client c2, uint32_t addr) {
   vector<string> names { "ROOM1", "ROOM2" };
 
   auto rl = room_list::from_data(addr, ids, names);
-  auto s = rl.to_string();
-  c1.send(s);
-  assert(c2.receive() == s);
+  c1.send(rl.to_string());
+  assert(rl == room_list::from_string(c2.receive()));
 }
 
 void test_room_query(client c1, client c2, uint32_t addr) {
   auto rq = room_query::from_address(addr);
-  auto s = rq.to_string();
-  c1.send(s);
-  assert(c2.receive() == s);
+  c1.send(rq.to_string());
+  assert(rq == room_query::from_string(c2.receive()));
 }
 
 void test_invite_request(client c1, client c2, uint32_t addr) {
-  auto rq = invite_request::from_data(addr, 0x1050, "ROOM1");
-  auto s = rq.to_string();
-  c1.send(s);
-  assert(c2.receive() == s);
+  auto ir = invite_request::from_data(addr, 0x1050, "ROOM1");
+  c1.send(ir.to_string());
+  assert(ir == invite_request::from_string(c2.receive()));
+}
+
+void test_list_update(client c1, client c2, uint32_t addr) {
+  uint64_t room_id { 0x1050 };
+  vector<uint32_t> addresses { 0x3333, 0x33333333 };
+  vector<string> names { "User1", "Superdupername!" };
+
+  auto lu = list_update::from_data(true, addr, room_id, addresses, names);
+  c1.send(lu.to_string());
+  assert(lu == list_update::from_string(c2.receive()));
 }
 
 void run(string address) {
@@ -48,13 +58,10 @@ void run(string address) {
   test_room_list(c1, c2, addr);
   test_room_query(c1, c2, addr);
   test_invite_request(c1, c2, addr);
+  test_list_update(c1, c2, addr);
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2) {
-    cerr << "Usage: ./test IP_ADDRESS\n";
-  }
-  else {
-    run(argv[1]);
-  }
+  if (argc < 2) { cerr << "Usage: ./test IP_ADDRESS\n"; }
+  else { run(argv[1]); }
 }

@@ -5,6 +5,7 @@ enum message_type {
   ROOM_QUERY = 0,
   ROOM_LIST = 1,
   INVITE_REQUEST = 2,
+  LIST_UPDATE = 3,
 };
 
 #endif

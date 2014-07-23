@@ -10,6 +10,13 @@ class room_query {
 
     std::string to_string();
 
+    message_header header() const { return _header; }
+
+    bool operator==(const room_query &other) {
+      return header() == other.header();
+    }
+    bool operator!=(const room_query &other) { return !(*this==other); }
+
   private:
     room_query(message_header header) : _header(header) { }
 

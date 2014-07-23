@@ -11,7 +11,7 @@ invite_request invite_request::from_string(string s) {
 
   auto id = bit::extract64(body);
   auto name = body.substr(8);
-  name = name.substr(0, name.size()-1);
+  name = name.substr(0, name.size());
 
   return invite_request { header, id, name };
 }

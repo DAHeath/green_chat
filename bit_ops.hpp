@@ -10,6 +10,7 @@ namespace bit {
   uint32_t extract32(std::stringstream& ss);
   uint64_t extract64(std::stringstream& ss);
 
+  uint32_t extract32(std::string& s);
   uint64_t extract64(std::string& s);
 
   void insert8(std::ostringstream& ss, uint32_t data);

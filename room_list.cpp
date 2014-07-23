@@ -33,7 +33,7 @@ room_list room_list::from_data(
     vector<string> names) {
 
   uint32_t length = 0;
-  for (auto n : names) { length += n.size() + 9; } // 8 for id and 1 for '\n'
+  for (auto n : names) { length += n.size() + 9; } // 8 for id and 1 for '\0'
   message_header header { message_type::ROOM_LIST, 0, length, address };
   return room_list { header, ids, names };
 }

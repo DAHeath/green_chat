@@ -5,7 +5,7 @@
 namespace bit {
 
   uint32_t extract8(std::stringstream& ss) {
-    char part;
+    unsigned char part;
     ss >> part;
     return part;
   }
@@ -23,13 +23,18 @@ namespace bit {
     return (first << 32) + extract32(ss);
   }
 
+  uint32_t extract32(std::string& s) {
+    std::stringstream ss(s);
+    return extract32(ss);
+  }
+
   uint64_t extract64(std::string& s) {
     std::stringstream ss(s);
     return extract64(ss);
   }
 
   void insert8(std::ostringstream& ss, uint32_t data) {
-    char c = data & 0x000000FF;
+    unsigned char c = data & 0x000000FF;
     ss << c;
   }
 
