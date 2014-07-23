@@ -7,10 +7,7 @@
 
 using namespace std;
 
-list_update list_update::from_string(string s) {
-  auto header = message_header::from_string(s.substr(0, 8));
-  auto body = s.substr(8, header.length+9);
-
+list_update *list_update::from_string(string body) {
   uint64_t room_id = bit::extract64(body);
   body = body.substr(8);
 
@@ -26,29 +23,17 @@ list_update list_update::from_string(string s) {
     names.push_back(body.substr(0, divide-1));
   } while (divide < body.size());
 
-  return list_update { header, room_id, addresses, names };
+  return new list_update { room_id, addresses, names };
 }
 
-list_update list_update::from_data(
-        bool is_add,
-        uint32_t addr,
-        uint64_t room_id,
-        std::vector<uint32_t> addresses,
-        std::vector<std::string> names) {
-
+uint32_t list_update::length() const {
   uint32_t length = 8; // 8 for room id
-  for (auto n : names) { length += n.size() + 5; } // 4 for address, 1 for '\0'
-
-  uint32_t flags = 0;
-  if (!is_add) { flags = 1; }
-
-  message_header header { message_type::LIST_UPDATE, flags, length, addr };
-  return list_update { header, room_id, addresses, names };
+  for (auto n : _names) { length += n.size() + 5; } // 4 for address, 1 for '\0'
+  return length;
 }
 
-string list_update::to_string() {
+string list_update::to_string() const {
   ostringstream ss;
-  ss << _header.to_string();
   bit::insert64(ss, _room_id);
   for (unsigned int i = 0; i < _names.size(); i++) {
     bit::insert32(ss, _addresses[i]);

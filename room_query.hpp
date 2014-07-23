@@ -1,26 +1,18 @@
 #ifndef ROOM_QUERY_HPP
 #define ROOM_QUERY_HPP
 
-#include "message_header.hpp"
+#include "message_body.hpp"
 
-class room_query {
+#include <iostream>
+
+class room_query : public message_body {
   public:
-    static room_query from_string(std::string);
-    static room_query from_address(uint32_t addr);
-
-    std::string to_string();
-
-    message_header header() const { return _header; }
-
-    bool operator==(const room_query &other) {
-      return header() == other.header();
+    std::string to_string() const { return ""; }
+    bool operator==(const message_body &other) {
+      return typeid(*this) == typeid(other);
     }
-    bool operator!=(const room_query &other) { return !(*this==other); }
-
-  private:
-    room_query(message_header header) : _header(header) { }
-
-    message_header _header;
+    uint32_t length() const { return 0; }
+    uint32_t type() const { return message_type::ROOM_QUERY; }
 };
 
 #endif

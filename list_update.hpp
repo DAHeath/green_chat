@@ -4,44 +4,44 @@
 #include <vector>
 
 #include "message_header.hpp"
+#include "message_body.hpp"
 
-class list_update {
+class list_update : public message_body {
   public:
-    static list_update from_string(std::string);
-    static list_update from_data(
-        bool is_add,
-        uint32_t addr,
-        uint64_t room_id,
-        std::vector<uint32_t> addresses,
-        std::vector<std::string> names);
+    static list_update *from_string(std::string);
+    std::string to_string() const;
 
-    std::string to_string();
-
-    message_header header() const { return _header; }
-    uint64_t room_id() const { return _room_id; }
-    std::vector<uint32_t> addresses() const { return _addresses; }
-    std::vector<std::string> names() const { return _names; }
-
-    bool operator==(const list_update &other) {
-      return header()    == other.header() &&
-             room_id()   == other.room_id() &&
-             addresses() == other.addresses() &&
-             names()     == other.names();
-    }
-    bool operator!=(const list_update &other) { return !(*this==other); }
-
-  private:
     list_update(
-        message_header header,
         uint64_t room_id,
         std::vector<uint32_t> addresses,
         std::vector<std::string> names) :
-      _header(header),
       _room_id(room_id),
       _addresses(addresses),
       _names(names) { }
 
-    message_header _header;
+
+    uint64_t room_id() const { return _room_id; }
+    std::vector<uint32_t> addresses() const { return _addresses; }
+    std::vector<std::string> names() const { return _names; }
+
+
+    uint32_t length() const;
+    uint32_t type() const { return message_type::LIST_UPDATE; }
+
+
+    bool operator==(const list_update &other) {
+      return room_id()   == other.room_id() &&
+             addresses() == other.addresses() &&
+             names()     == other.names();
+    }
+    bool operator!=(const list_update &other) { return !(*this==other); }
+    bool operator==(const message_body &other) {
+      return typeid(*this) == typeid(other) &&
+        *this==dynamic_cast<const list_update&>(other);
+    }
+
+  private:
+
     uint64_t _room_id;
     std::vector<uint32_t> _addresses;
     std::vector<std::string> _names;

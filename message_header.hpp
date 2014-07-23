@@ -3,10 +3,11 @@
 
 #include <string>
 #include <cstdint>
+#include <memory>
 
 class message_header {
   public:
-    static message_header from_string(std::string);
+    static message_header *from_string(std::string);
     message_header(
         uint32_t type, uint32_t flags, uint32_t length, uint32_t address);
     const uint32_t type;

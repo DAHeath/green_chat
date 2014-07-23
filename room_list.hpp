@@ -3,33 +3,33 @@
 
 #include <vector>
 
-#include "message_header.hpp"
+#include "message_body.hpp"
 
-class room_list {
+class room_list : public message_body {
   public:
-    static room_list from_string(std::string);
-    static room_list from_data(
-        uint32_t addr,
-        std::vector<uint64_t> ids,
-        std::vector<std::string> names);
+    static room_list *from_string(std::string);
+    room_list(std::vector<uint64_t> ids, std::vector<std::string> names) :
+      _ids(ids), _names(names) { }
 
-    std::string to_string();
+    std::string to_string() const;
 
-    message_header header() const { return _header; }
     std::vector<uint64_t> ids() const { return _ids; }
     std::vector<std::string> names() const { return _names; }
 
+    uint32_t length() const;
+    uint32_t type() const { return message_type::ROOM_LIST; }
+
     bool operator==(const room_list &other) {
-      return header() == other.header() &&
-             ids()    == other.ids() &&
-             names()  == other.names();
+      return ids()   == other.ids() &&
+             names() == other.names();
     }
     bool operator!=(const room_list &other) { return !(*this==other); }
+    bool operator==(const message_body &other) {
+      return typeid(*this) == typeid(other) &&
+        *this==dynamic_cast<const room_list&>(other);
+    }
 
   private:
-    room_list(message_header, std::vector<uint64_t>, std::vector<std::string>);
-
-    message_header _header;
     std::vector<uint64_t> _ids;
     std::vector<std::string> _names;
 };

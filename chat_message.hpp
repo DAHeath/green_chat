@@ -1,44 +1,42 @@
 #ifndef CHAT_MESSAGE_HPP
 #define CHAT_MESSAGE_HPP
 
-#include "message_header.hpp"
+#include "message_body.hpp"
 
-class chat_message {
+class chat_message : public message_body {
   public:
-    static chat_message from_string(std::string);
-    static chat_message from_data(
-        uint32_t addr,
+    static chat_message *from_string(std::string);
+
+    chat_message(
         uint64_t room_id,
         uint32_t timestamp,
-        std::string message);
+        std::string message) :
+      _room_id(room_id),
+      _timestamp(timestamp),
+      _message(message) { }
 
-    std::string to_string();
+    std::string to_string() const;
 
-    message_header header() const { return _header; }
     uint64_t room_id() const { return _room_id; }
     uint32_t timestamp() const { return _timestamp; }
     std::string message() const { return _message; }
 
+    uint32_t length() const { return 8 + 4 + _message.size(); }
+    uint32_t type() const { return message_type::CHAT_MESSAGE; }
+
     bool operator==(const chat_message &other) {
-      return header()    == other.header() &&
-             room_id()   == other.room_id() &&
+      return room_id()   == other.room_id() &&
              timestamp() == other.timestamp() &&
              message()   == other.message();
     }
     bool operator!=(const chat_message &other) { return !(*this==other); }
 
-  private:
-    chat_message(
-        message_header header,
-        uint64_t room_id,
-        uint32_t timestamp,
-        std::string message) :
-      _header(header),
-      _room_id(room_id),
-      _timestamp(timestamp),
-      _message(message) { }
+    bool operator==(const message_body &other) {
+      return typeid(*this) == typeid(other) &&
+        *this==dynamic_cast<const chat_message&>(other);
+    }
 
-    message_header _header;
+  private:
     uint64_t _room_id;
     uint32_t _timestamp;
     std::string _message;
