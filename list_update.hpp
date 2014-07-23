@@ -41,7 +41,6 @@ class list_update : public message_body {
     }
 
   private:
-
     uint64_t _room_id;
     std::vector<uint32_t> _addresses;
     std::vector<std::string> _names;

@@ -9,6 +9,7 @@
 class message {
   public:
     static message from_string(std::string);
+    static message from_body(uint32_t addr, uint8_t flags, message_body *body);
 
     message(message_header *header, message_body *body) :
       _header(header), _body(body) { }

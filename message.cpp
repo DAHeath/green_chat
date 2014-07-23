@@ -34,3 +34,8 @@ message message::from_string(string s) {
       throw invalid_message_type();
   }
 }
+
+message message::from_body(uint32_t addr, uint8_t flags, message_body *body) {
+  auto h = new message_header(body->type(), flags, body->length(), addr);
+  return message(h, body);
+}
