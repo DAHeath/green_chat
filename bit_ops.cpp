@@ -6,7 +6,7 @@ namespace bit {
 
   uint32_t extract8(std::stringstream& ss) {
     unsigned char part;
-    ss >> part;
+    ss >> std::noskipws >> part;
     return part;
   }
 
@@ -35,7 +35,7 @@ namespace bit {
 
   void insert8(std::ostringstream& ss, uint32_t data) {
     unsigned char c = data & 0x000000FF;
-    ss << c;
+    ss << std::noskipws << c;
   }
 
   void insert16(std::ostringstream& ss, uint32_t data) {
