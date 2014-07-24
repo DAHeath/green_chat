@@ -1,6 +1,8 @@
 #include "socket.hpp"
 #include "client.hpp"
 
+#include "user.hpp"
+
 #include "message.hpp"
 #include "message_header.hpp"
 #include "message_body.hpp"
@@ -76,6 +78,7 @@ void run(string address) {
 
   auto c1 = client(4567);
   auto c2 = client(5678);
+  auto c3 = client(6789);
 
   c1.add_neighbor(addr, 5678);
   c2.accept();
@@ -86,6 +89,14 @@ void run(string address) {
   test_list_update(c1, c2, f);
   test_chat_message(c1, c2, f);
   test_chat_ack(c1, c2, f);
+
+  auto u1 = user(addr, 6789, "Bob");
+  c3.accept();
+
+  cerr << "HERE\n";
+
+  u1.send("Sup");
+  cerr << c3.receive() << "\n";
 }
 
 int main(int argc, char *argv[]) {
