@@ -27,6 +27,8 @@ class client {
      * Get the first valid message received from contacts.
      */
     std::string receive();
+    
+    //TODO: add function for sending and handling invite_request
   private:
     network::socket interface;
     std::vector<network::socket> couriers;
