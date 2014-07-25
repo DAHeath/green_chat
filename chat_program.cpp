@@ -1,5 +1,21 @@
 #include "client.hpp"
 
+bool inRoom;
+time_t timer;
+std::string roomName;
+std::string username;
+uint64_t roomID;
+std::Map<uint32_t,std::Pair<std::string,int>> peerList;
+client mainClient(8000);
+bool exit;
+uint32_t myAddr;
+message_factory factory;
+    
+std::mutex inRoom_mut;
+std::mutex peerList_mut;
+std::mutex exit_mut;
+std::mutex username_mut;
+
 int joinRoom(uint64_t id, std::string){
     //TODO: create connection to input addr, send invite_request
 }
@@ -67,20 +83,13 @@ static void inputLoop(){
 }
 
 int main(int argc, char** argv){
-    bool inRoom = false;
-    time_t timer;
-    std::string roomName "";
-    std::string username = "USER";
-    uint64_t roomID = 0;
-    std::Map<uint32_t,std::Pair<std::string,int>> peerList;
-    client mainClient(8000);
-    bool exit = false;
-    uint32_t myAddr;
-    
-    std::mutex inRoom_mut;
-    std::mutex peerList_mut;
-    std::mutex exit_mut;
-    std::mutex username_mut;
+    inRoom = false;
+    timer;
+    roomName = "";
+    username = "USER";
+    roomID = 0;
+    peerList = new Map<uint32_t,std::Pair<std::string, int>>;
+    exit = false;
     
     //get local host address
     char ac[80];
@@ -88,8 +97,9 @@ int main(int argc, char** argv){
     struct hostent *phe = gethostbyname(ac);
     myAddr = phe->h_addr_list[0]->s_addr;
     
-    message_factory factory(myAddr);
+    factory = message_factory(myAddr);
     
     std::thread userInput(inputLoop);
-    
+    inmessage::run(mainClient);
+    connection_interface::run(mainClient);
 }
