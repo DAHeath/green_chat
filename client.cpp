@@ -1,24 +1,26 @@
 #include "client.hpp"
 #include "message_types.hpp"
 
-network::socket client::add_neighbor(uint32_t ip_address, std::string name, unsigned int socket) {
+void client::add_neighbor(
+    uint32_t ip_address,
+    std::string name,
+    unsigned int socket) {
   network::socket result = network::socket::connected(ip_address, socket);
   comm_sockets.push_back(result);
   addresses.push_back(ip_address);
   names.push_back(name);
-  return result;
 }
 
 void client::remove_neighbor(uint32_t ip_address) {
-    int n;
+    unsigned int n;
     for (n = 0; n < addresses.size(); n++) {
       if (addresses[n] == ip_address) { break;}
     }
-    addresses.erase(n);
+    addresses.erase(addresses.begin() + n);
     network::socket toremove = comm_sockets[n];
-    comm_sockets.erase(n);
+    comm_sockets.erase(comm_sockets.begin() + n);
     toremove.close();
-    names.erase(n);
+    names.erase(names.begin() + n);
 }
 
 network::socket client::move_to_comm(uint32_t ip_address, std::string name) {
@@ -26,7 +28,7 @@ network::socket client::move_to_comm(uint32_t ip_address, std::string name) {
   comm_sockets.push_back(result);
   addresses.push_back(ip_address);
   names.push_back(name);
-  couriers.erase(0);
+  couriers.erase(couriers.begin());
   return result;
 }
 

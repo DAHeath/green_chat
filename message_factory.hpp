@@ -23,8 +23,12 @@ class message_factory {
         std::vector<std::string> names) {
       return message::from_body(addr, 0, new room_list(ids, names));
     }
-    message build_invite_request(uint64_t id, std::string name) {
-      return message::from_body(addr, 0, new invite_request(id, name));
+    message build_invite_request(
+        uint64_t id,
+        std::string room_name,
+        std::string user_name) {
+      return message::from_body(addr, 0, new invite_request(
+            id, room_name, user_name));
     }
     message build_add_list_update(
         uint64_t room_id,
