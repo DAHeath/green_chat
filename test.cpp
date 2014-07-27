@@ -19,13 +19,11 @@
 using namespace std;
 
 void test(client c1, client c2, message m) {
-  auto s = m.to_string();
+  auto s1 = m.to_string();
+  assert(m == message::from_string(s1));
+  c1.send(m.to_string());
+  auto s = c2.receiveConnection();
   assert(m == message::from_string(s));
-  /* c1.send(m.to_string()); */
-  /* cerr << m.to_string() << "\n"; */
-  /* auto s = c2.receive(); */
-  /* cerr << s << "\n"; */
-  /* assert(m == message::from_string(s)); */
 }
 
 void make_and_test(client c1, client c2, message_body *body, uint32_t addr) {

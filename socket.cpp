@@ -4,7 +4,7 @@
 
 namespace network {
 
-  const socket socket::bound(const int port, const int queueSize) {
+  socket socket::bound(const int port, const int queueSize) {
     int s = network::impl::create_socket();
     impl::socket_address a = build_address(port);
     impl::bind_socket(s, (struct sockaddr*)&a, sizeof(a));
@@ -12,7 +12,7 @@ namespace network {
     return socket(s);
   };
 
-  const impl::socket_address socket::build_address(const int port) {
+  impl::socket_address socket::build_address(const int port) {
     impl::socket_address addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -20,14 +20,14 @@ namespace network {
     return addr;
   }
 
-  const socket socket::connected(const uint32_t ip_address, const int port) {
+  socket socket::connected(const uint32_t ip_address, const int port) {
     int s = impl::create_socket();
     impl::socket_address a = build_address(ip_address, port);
     impl::connect_socket(s, (struct sockaddr*)&a, sizeof(a));
     return socket(s);
   }
 
-  const impl::socket_address socket::build_address(
+  impl::socket_address socket::build_address(
       const uint32_t ip_address, const int port) {
     impl::socket_address addr;
     addr.sin_family = AF_INET;
@@ -40,7 +40,7 @@ namespace network {
     impl::socket_send(s, message.c_str(), message.length(), 0);
   }
 
-  const std::string socket::receive(const unsigned int length) const {
+  std::string socket::receive(const unsigned int length) const {
     if (length <= 0) return "";
     char buffer[length+1];
     int len = impl::socket_receive(s, buffer, length, 0);
@@ -52,7 +52,7 @@ namespace network {
     return message;
   }
 
-  const socket socket::accept() const {
+  socket socket::accept() const {
     impl::socket_address addr;
     unsigned int len = sizeof(addr);
     int new_s = impl::socket_accept(s, (struct sockaddr*)&addr, &len);

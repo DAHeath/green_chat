@@ -15,30 +15,30 @@ namespace network {
        * requests can be stored before they fall off. The queue is emptied
        * through calls to accept.
        */
-      static const socket bound(const int port, const int queue_size);
+      static socket bound(const int port, const int queue_size);
 
       /**
        * Creates a listening connected port. Because there is no outgoing IP
        * address, 
        */
-      static const socket connected(const uint32_t ip_address, const int port);
+      static socket connected(const uint32_t ip_address, const int port);
 
-      void send(const std::string message) const;
-      const std::string receive(const unsigned int length) const;
+      void send(std::string message) const;
+      std::string receive(const unsigned int length) const;
       void close() const;
 
       /**
        * Calls to accept should be reserved for bound sockets.
        */
-      const socket accept() const;
+      socket accept() const;
 
     private:
-      static const impl::socket_address build_address(const int port);
-      static const impl::socket_address build_address(
+      static impl::socket_address build_address(const int port);
+      static impl::socket_address build_address(
           const uint32_t ip_address, const int port);
 
       socket(const int _s) : s(_s) { };
-      const int s;
+      int s;
 
   };
 };
