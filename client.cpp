@@ -57,6 +57,10 @@ std::string client::receiveConnection() {
   return message;
 }
 
+void make_courier(network::socket newCourier) {
+  couriers.push_back(newCourier);
+}
+
 void client::accept() {
   auto s = interface.accept();
   couriers.push_back(s);

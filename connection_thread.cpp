@@ -19,7 +19,7 @@ namespace connection_interface {
   void receive_connection(client client_ob) {
     message_factory factory = message_factory(myAddr);
     while(1) {
-      client_ob.accpet();
+      client_ob.accept();
       bool alive = true;
       while(alive) {
         messagestring = client_ob.receiveConnection();

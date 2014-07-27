@@ -16,8 +16,12 @@ std::mutex peerList_mut;
 std::mutex exit_mut;
 std::mutex username_mut;
 
-int joinRoom(uint64_t id, std::string){
-    //TODO: create connection to input addr, send invite_request
+int joinRoom(uint64_t id, uint32_t addr, std::string name){
+    auto newSocket = socket::connected(addr, 8000);
+    mainClient.make_courier(newSocket);
+    mainClient.send_to_one(factory.build_invite_request(id, name);
+    cout << "Joining room..." << endl;
+    while(!inRoom){ };
 }
 
 int parseInput(std::string input){
@@ -71,6 +75,7 @@ static void inputLoop(){
             exit = true;
             inRoom_mut.unlock();
             exit_mut.unlock();
+            continue;
         }
         
         inRoom_mut.lock();
@@ -78,7 +83,23 @@ static void inputLoop(){
            ret_code = parseInput(input); 
         }else{
             //TODO: parse room addr and ID from input, call joinRoom
+            uint64_t room_id;
+            uint32_t room_addr;
+            bool failed = false;
+            std::istringstream iss(token);
+
+            if(!(iss >> room_id)){
+              failed = true;
+            }
+            getline(ss,token,' ');
+            room_addr = inet_addr(token);
+            if(!failed){
+              joinRoom(room_id, room_addr, input_cpy);
+            }else{
+              cout << "Usage is <room ID> <room-member IP address> <room name>" << endl;
+            }
         }
+        inRoom_mut.unlock();
     }
 }
 

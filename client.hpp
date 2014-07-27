@@ -45,6 +45,8 @@ class client {
     */
     network::socket move_to_comm(uint32_t ip_address, std::string name);
 
+    void make_courier(network::socket newCourier);
+
     /**
     * Send the message to the one in couriers list
     */
