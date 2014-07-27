@@ -15,7 +15,7 @@ void client::remove_neighbor(uint32_t ip_address) {
       if (addresses[n] == ip_address) { break;}
     }
     addresses.erase(n);
-    socket toremove = comm_sockets[n];
+    network::socket toremove = comm_sockets[n];
     comm_sockets.erase(n);
     toremove.close();
     names.erase(n);
@@ -37,7 +37,6 @@ void client::send(std::string message) {
 void client::sendtoOne(const std::string message) {
   couriers[0].send(message);
 }
-
 
 
 std::string client::receive() {

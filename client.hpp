@@ -28,6 +28,9 @@ class client {
      */
     std::string receive();
 
+    /**
+    * Get the incoming connection message
+    */
     std::string receiveConnection();
 
     //TODO: add function for sending and handling invite_request
@@ -37,9 +40,14 @@ class client {
     */
     void remove_neighbor(uint32_t ip_address);
 
-
+    /**
+    * Move the one in couriers list into the comm_list
+    */
     network::socket move_to_comm(uint32_t ip_address, std::string name);
 
+    /**
+    * Send the message to the one in couriers list
+    */
     void sendtoOne(const std::string message);
 
     std::vector<uint32_t> getaddresses() { return addresses};

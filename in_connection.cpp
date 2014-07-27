@@ -3,6 +3,7 @@
 #include "room_list.hpp"
 #include "chat_message.hpp"
 #include "message_factory.hpp"
+#include "time.h"
 
 
 extern uint32_t myAddr;
@@ -16,6 +17,7 @@ namespace inmessage {
   }
 
   void receive_messages(client client_ob) {
+    message_factory factory = message_factory(myAddr);
     while (1){
       std::string messagestring = client_ob.receive();
       message newmessage = message::from_string(messagestring);
@@ -45,9 +47,13 @@ namespace inmessage {
           uint32_t ip = header.address;
           std::Pair<std::string,int> sn = peerList.find(ip);
           if (sn == null) { break;}
-          std::cout << chat.timestamp() + " " + sn.first +  " : " + chat.message();
-          message_factory factory = message_factory(myAddr);
-          message ack = factory.build_chat_ack(roomID, );//tmestamps!
+          std::cout << chat.timestamp() + " " + sn.first +  " : " + chat.message();//add timestampstring
+          /**
+          time_t timer;
+          time(&timer);
+          tm* tmtime = localime(&time);
+          timer = mktime(tmtime);*/
+          message ack = factory.build_chat_ack(roomID, static_cast<uint32_t>(time(NULL)));//tmestamps!
           sn.second.send(ack.to_string());
           break;
         case message_type::CHAT_ACK:
@@ -66,14 +72,15 @@ namespace inmessage {
     for (int n = 0; n < length; n++) {
       if (flag) {
         client_ob.delete_neighbor(addresses[n]);// this may have to be modified, according to the way client track member list
+        /**
         std::Pair<std::string,int> sn = peerList.find(addresses[n]);
         if (sn == null) { continue;}
         network::socket tomove = sn.second
-        tomove.close();
+        tomove.close();*/
         peerList.erase(address[n]);
       } else {
         network::socket toadd = client_ob.add_neighbor(addresses[n], 8000);
-        peerList.insert(addresses[n], std::pair<std::string,int>(names[n], socket));
+        peerList.insert(addresses[n], std::pair<std::string,int>(names[n], toadd));
       }
     }
   }
