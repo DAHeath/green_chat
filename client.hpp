@@ -7,7 +7,9 @@
 
 class client {
   public:
-    client(unsigned int socket) : interface(network::socket::bound(socket, 10)) { }
+    client(unsigned int addr, unsigned int socket) :
+      interface(network::socket::bound(socket, 10)),
+      _ip_address(addr) { }
 
     /**
      * Allows a client to establish a connection with another client who there
@@ -50,12 +52,16 @@ class client {
     */
     void sendtoOne(const std::string message);
 
-    std::vector<uint32_t> getaddresses() { return addresses};
+    std::vector<uint32_t> getaddresses() { return addresses; }
 
-    std::vector<std::string> getnames { return names};
+    std::vector<std::string> getnames() { return names; }
+
+    unsigned int ip_address() { return _ip_address; }
 
   private:
     network::socket interface;
+    unsigned int _ip_address;
+
     std::vector<network::socket> couriers;
     std::vector<network::socket> comm_sockets;
     std::vector<uint32_t> addresses;

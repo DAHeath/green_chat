@@ -78,9 +78,9 @@ void run(string address) {
 
   message_factory f { addr };
 
-  auto c1 = client(3456);
-  auto c2 = client(4567);
-  auto c3 = client(6789);
+  auto c1 = client(addr, 3456);
+  auto c2 = client(addr, 4567);
+  auto c3 = client(addr, 6789);
 
   c1.add_neighbor(addr, "NEIGHBOR", 4567);
   c2.accept();
