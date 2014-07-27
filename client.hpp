@@ -7,8 +7,8 @@
 
 class client {
   public:
-    client(unsigned int addr, unsigned int socket) :
-      interface(network::socket::bound(socket, 10)),
+    client(std::string name, unsigned int addr, unsigned int socket) :
+      _name(name), interface(network::socket::bound(socket, 10)),
       _ip_address(addr) { }
 
     /**
@@ -65,12 +65,16 @@ class client {
       _room_name = room_name;
     }
 
+    std::string name() { return _name; }
+
     uint64_t room_id() { return _room_id; }
     std::string room_name() { return _room_name; }
 
   private:
+    std::string _name;
     network::socket interface;
     unsigned int _ip_address;
+
 
     uint64_t _room_id;
     std::string _room_name;
