@@ -19,9 +19,13 @@
 using namespace std;
 
 void test(client c1, client c2, message m) {
-  c1.send(m.to_string());
-  auto s = c2.receive();
+  auto s = m.to_string();
   assert(m == message::from_string(s));
+  /* c1.send(m.to_string()); */
+  /* cerr << m.to_string() << "\n"; */
+  /* auto s = c2.receive(); */
+  /* cerr << s << "\n"; */
+  /* assert(m == message::from_string(s)); */
 }
 
 void make_and_test(client c1, client c2, message_body *body, uint32_t addr) {
@@ -44,7 +48,7 @@ void test_room_list(client c1, client c2, message_factory f) {
 
 
 void test_invite_request(client c1, client c2, message_factory f) {
-  test(c1, c2, f.build_invite_request(0x1050, "ROOM1"));
+  test(c1, c2, f.build_invite_request(0x1050, "ROOM1", "USER1"));
 }
 
 
@@ -76,24 +80,23 @@ void run(string address) {
 
   message_factory f { addr };
 
-  auto c1 = client(4567);
-  auto c2 = client(5678);
+  auto c1 = client(3456);
+  auto c2 = client(4567);
   auto c3 = client(6789);
 
-  c1.add_neighbor(addr, 5678);
+  c1.add_neighbor(addr, "NEIGHBOR", 4567);
   c2.accept();
 
   test_room_query(c1, c2, f);
   test_room_list(c1, c2, f);
   test_invite_request(c1, c2, f);
+
   test_list_update(c1, c2, f);
   test_chat_message(c1, c2, f);
   test_chat_ack(c1, c2, f);
 
   auto u1 = user(addr, 6789, "Bob");
   c3.accept();
-
-  cerr << "HERE\n";
 
   u1.send("Sup");
   cerr << c3.receive() << "\n";
