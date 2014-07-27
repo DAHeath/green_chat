@@ -1,67 +1,49 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
-
 #include <vector>
 
 #include "socket.hpp"
 #include "user.hpp"
+#include "message.hpp"
+#include "message_factory.hpp"
 
 class client {
   public:
     client(std::string name, unsigned int addr, unsigned int socket) :
       _name(name),
       interface(network::socket::bound(socket, 10)),
-      _ip_address(addr) { }
+      _ip_address(addr),
+      _f(message_factory(addr)){ }
+
+    void process_message(message m);
 
     /**
      * Allows a client to establish a connection with another client who there
      * has yet to be any contact with. Bypasses the courier process.
      */
-    void add_neighbor(uint32_t ip_address, std::string name, unsigned int socket);
-    void add_neighbor(user u) { comm_sockets.push_back(u); }
-
-    void accept();
+    void add_neighbor(user u) { roommates.push_back(u); }
+    void remove_neighbor(uint32_t ip_address);
+    void add_courier(network::socket s) { couriers.push_back(s); }
+    void remove_courier(uint32_t address);
 
     /**
      * Broadcast a message to every client who this client has successfully made
      * contact with.
      */
     void send(std::string message);
+    void send_to_courier(uint32_t address, std::string message);
 
     /**
      * Get the first valid message received from contacts.
      */
     std::string receive();
-
+    void accept();
     /**
     * Get the incoming connection message
     */
-    std::string receiveConnection();
-
-    //TODO: add function for sending and handling invite_request
-
-    /**
-    *remove a connection
-    */
-    void remove_neighbor(uint32_t ip_address);
-
-    /**
-    * Move the one in couriers list into the comm_list
-    */
-    void move_to_comm(uint32_t ip_address, std::string name);
-
-    void make_courier(network::socket newCourier);
-    void clear_courier() { couriers.erase(couriers.begin()); }
-    network::socket courier() { return couriers[0]; }
-
-    /**
-    * Send the message to the one in couriers list
-    */
-    void sendtoOne(const std::string message);
+    std::string receive_from_courier();
 
     unsigned int ip_address() { return _ip_address; }
-
-    std::vector<user> roommates() { return comm_sockets; }
 
     void set_room(uint64_t room_id, std::string room_name) {
       _room_id = room_id;
@@ -72,17 +54,29 @@ class client {
 
     uint64_t room_id() { return _room_id; }
     std::string room_name() { return _room_name; }
+    bool in_room() { return _room_name == ""; }
+
 
   private:
+    void send_room_list(uint32_t address);
+    void respond_to_invite(message &m);
+    void send_names_list_to_new_user(user u);
+    void send_new_user_to_room(user u);
+    void move_user_to_room(user u);
+
+    network::socket courier_at(uint32_t address);
+
     std::string _name;
     network::socket interface;
     unsigned int _ip_address;
+
+    message_factory _f;
 
     uint64_t _room_id;
     std::string _room_name;
 
     std::vector<network::socket> couriers;
-    std::vector<user> comm_sockets;
+    std::vector<user> roommates;
 };
 
 #endif

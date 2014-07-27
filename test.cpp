@@ -8,9 +8,7 @@
 #include "message_body.hpp"
 #include "message_types.hpp"
 #include "message_factory.hpp"
-
-#include "bit_ops.hpp"
-
+#include "bit_ops.hpp" 
 #include <iostream>
 #include <cstdint>
 #include <assert.h>
@@ -22,7 +20,7 @@ void test(client c1, client c2, message m) {
   auto s1 = m.to_string();
   assert(m == message::from_string(s1));
   c1.send(m.to_string());
-  auto s = c2.receiveConnection();
+  auto s = c2.receive_from_courier();
   assert(m == message::from_string(s));
 }
 
@@ -78,26 +76,47 @@ void run(string address) {
 
   message_factory f { addr };
 
-  auto c1 = client(addr, 3456);
-  auto c2 = client(addr, 4567);
-  auto c3 = client(addr, 6789);
+  auto c1 = client("David", addr, 3456);
+  auto c2 = client("Other", addr, 4567);
+  auto c3 = client("Dude", addr, 6789);
 
-  c1.add_neighbor(addr, "NEIGHBOR", 4567);
+  c1.add_courier(network::socket::connected(addr, 4567));
   c2.accept();
 
-  test_room_query(c1, c2, f);
-  test_room_list(c1, c2, f);
-  test_invite_request(c1, c2, f);
+  c2.set_room(45678, "ROOM!");
+  c1.send_to_courier(addr, f.build_room_query().to_string());
 
-  test_list_update(c1, c2, f);
-  test_chat_message(c1, c2, f);
-  test_chat_ack(c1, c2, f);
+  auto s = c2.receive_from_courier();
+  auto m = message::from_string(s);
 
-  auto u1 = user(addr, 6789, "Bob");
-  c3.accept();
+  c2.process_message(m);
 
-  u1.send("Sup");
-  cerr << c3.receive() << "\n";
+  auto s2 = c1.receive_from_courier();
+
+  auto m2 = message::from_string(s2);
+  std::cerr << m2.header().type << "\n";
+  auto &rl = (room_list&)m2.body();
+  std::cerr << rl.names()[0] << "\n";
+
+
+
+  /* user u { addr, 4567, "NEIGHBOR" }; */
+  /* c1.add_neighbor(u); */
+  /* c2.accept(); */
+
+  /* test_room_query(c1, c2, f); */
+  /* test_room_list(c1, c2, f); */
+  /* test_invite_request(c1, c2, f); */
+
+  /* test_list_update(c1, c2, f); */
+  /* test_chat_message(c1, c2, f); */
+  /* test_chat_ack(c1, c2, f); */
+
+  /* auto u1 = user(addr, 6789, "Bob"); */
+  /* c3.accept(); */
+
+  /* u1.send("Sup"); */
+  /* cerr << c3.receive() << "\n"; */
 }
 
 int main(int argc, char *argv[]) {

@@ -32,13 +32,21 @@ namespace network {
        */
       socket accept() const;
 
+      void set_address(uint32_t address) { _address = address; }
+      uint32_t address() const { return _address; }
+
+      bool operator==(const socket &other) { return s == other.s; }
+      bool operator!=(const socket &other) { return !(*this==other); }
+
     private:
       static impl::socket_address build_address(const int port);
       static impl::socket_address build_address(
           const uint32_t ip_address, const int port);
 
       socket(const int _s) : s(_s) { };
+
       int s;
+      uint32_t _address;
 
   };
 };

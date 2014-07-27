@@ -2,6 +2,8 @@
 
 #include <netdb.h>
 
+#include <iostream>
+
 namespace network {
 
   socket socket::bound(const int port, const int queueSize) {
@@ -24,7 +26,9 @@ namespace network {
     int s = impl::create_socket();
     impl::socket_address a = build_address(ip_address, port);
     impl::connect_socket(s, (struct sockaddr*)&a, sizeof(a));
-    return socket(s);
+    auto res = socket(s);
+    res.set_address(ip_address);
+    return res;
   }
 
   impl::socket_address socket::build_address(
@@ -56,7 +60,9 @@ namespace network {
     impl::socket_address addr;
     unsigned int len = sizeof(addr);
     int new_s = impl::socket_accept(s, (struct sockaddr*)&addr, &len);
-    return socket(new_s);
+    auto res = socket(new_s);
+    res.set_address(addr.sin_addr.s_addr);
+    return res;
   }
 
   void socket::close() const {

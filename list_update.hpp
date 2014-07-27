@@ -5,6 +5,7 @@
 
 #include "message_header.hpp"
 #include "message_body.hpp"
+#include "user.hpp"
 
 class list_update : public message_body {
   public:
@@ -24,10 +25,8 @@ class list_update : public message_body {
     std::vector<uint32_t> addresses() const { return _addresses; }
     std::vector<std::string> names() const { return _names; }
 
-
     uint32_t length() const;
     uint32_t type() const { return message_type::LIST_UPDATE; }
-
 
     bool operator==(const list_update &other) {
       return room_id()   == other.room_id() &&
