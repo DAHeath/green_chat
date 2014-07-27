@@ -38,7 +38,7 @@ namespace connection_interface {
             invite_request body = (invite_request)newmessage.&body();
             uint64_t roomid = body.id();
             //if (roomid != roomID) { break;}// QUESTION: if the room id in the message not right, should I close the socket?
-            std::string name = body.name();//get the name TODO: add the function in invite_request class
+            std::string name = body.user_name();//get the name TODO: add the function in invite_request class
             uint32_t ip = header.address;//get the ip
             std::vector<uint32_t> ids;
             ids.push_back(ip);
