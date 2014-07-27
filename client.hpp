@@ -18,6 +18,7 @@ class client {
      * has yet to be any contact with. Bypasses the courier process.
      */
     void add_neighbor(uint32_t ip_address, std::string name, unsigned int socket);
+    void add_neighbor(user u) { comm_sockets.push_back(u); }
 
     void accept();
 
@@ -50,6 +51,8 @@ class client {
     void move_to_comm(uint32_t ip_address, std::string name);
 
     void make_courier(network::socket newCourier);
+    void clear_courier() { couriers.erase(couriers.begin()); }
+    network::socket courier() { return couriers[0]; }
 
     /**
     * Send the message to the one in couriers list
@@ -57,6 +60,8 @@ class client {
     void sendtoOne(const std::string message);
 
     unsigned int ip_address() { return _ip_address; }
+
+    std::vector<user> roommates() { return comm_sockets; }
 
     void set_room(uint64_t room_id, std::string room_name) {
       _room_id = room_id;
