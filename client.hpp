@@ -60,9 +60,20 @@ class client {
 
     unsigned int ip_address() { return _ip_address; }
 
+    void set_room(uint64_t room_id, std::string room_name) {
+      _room_id = room_id;
+      _room_name = room_name;
+    }
+
+    uint64_t room_id() { return _room_id; }
+    std::string room_name() { return _room_name; }
+
   private:
     network::socket interface;
     unsigned int _ip_address;
+
+    uint64_t _room_id;
+    std::string _room_name;
 
     std::vector<network::socket> couriers;
     std::vector<network::socket> comm_sockets;

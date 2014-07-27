@@ -59,7 +59,7 @@ std::string client::receiveConnection() {
   return message;
 }
 
-void make_courier(network::socket newCourier) {
+void client::make_courier(network::socket newCourier) {
   couriers.push_back(newCourier);
 }
 
