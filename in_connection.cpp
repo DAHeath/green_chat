@@ -2,6 +2,12 @@
 #include "message.hpp"
 #include "room_list.hpp"
 #include "chat_message.hpp"
+#include "message_factory.hpp"
+
+
+extern uint32_t myAddr;
+extern std::Map<uint32_t,std::Pair<std::string,int>> peerList;// wait, why is it a int for socket?
+extern uint64_t roomID;
 
 namespace inmessage {
 
@@ -13,7 +19,7 @@ namespace inmessage {
     while (1){
       std::string messagestring = client_ob.receive();
       message newmessage = message::from_string(messagestring);
-      message_header header = newmessage.header();
+      message_header header = newmessage.&header();
       switch(header -> type) {
         /**
         case message_type::ROOM_QUERY:
@@ -30,11 +36,19 @@ namespace inmessage {
           break;
         */
         case message_type::LIST_UPDATE:
-          updatelist(header -> flags, (list_update) newmessage.body(), client_ob);
+          updatelist(header -> flags, (list_update) newmessage.&body(), client_ob);
           break;
         case message_type::CHAT_MESSAGE:
-          chat_message chat = newmessage.body();//print to the standard output and than send back a ACK message
-          std::cout << chat.timestamp() + ":"
+          chat_message chat = (chat_message)newmessage.&body();//print to the standard output and than send back a ACK message
+          uint64_t indenti = chat.room_id();
+          if (indenti != roomID) { break;}
+          uint32_t ip = header.address;
+          std::Pair<std::string,int> sn = peerList.find(ip);
+          if (sn == null) { break;}
+          std::cout << chat.timestamp() + " " + sn.first +  " : " + chat.message();
+          message_factory factory = message_factory(myAddr);
+          message ack = factory.build_chat_ack(roomID, );//tmestamps!
+          sn.second.send(ack.to_string());
           break;
         case message_type::CHAT_ACK:
           break;
@@ -52,8 +66,14 @@ namespace inmessage {
     for (int n = 0; n < length; n++) {
       if (flag) {
         client_ob.delete_neighbor(addresses[n]);// this may have to be modified, according to the way client track member list
+        std::Pair<std::string,int> sn = peerList.find(addresses[n]);
+        if (sn == null) { continue;}
+        network::socket tomove = sn.second
+        tomove.close();
+        peerList.erase(address[n]);
       } else {
-        client_ob.add_neighbor(addresses[n], 4000);
+        network::socket toadd = client_ob.add_neighbor(addresses[n], 8000);
+        peerList.insert(addresses[n], std::pair<std::string,int>(names[n], socket));
       }
     }
   }
