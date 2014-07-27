@@ -5,31 +5,27 @@ void client::add_neighbor(
     uint32_t ip_address,
     std::string name,
     unsigned int socket) {
-  network::socket result = network::socket::connected(ip_address, socket);
-  comm_sockets.push_back(result);
-  addresses.push_back(ip_address);
-  names.push_back(name);
+  user u { ip_address, socket, name };
+
+  comm_sockets.push_back(u);
 }
 
 void client::remove_neighbor(uint32_t ip_address) {
     unsigned int n;
-    for (n = 0; n < addresses.size(); n++) {
-      if (addresses[n] == ip_address) { break;}
+    for (n = 0; n < comm_sockets.size(); n++) {
+      if (comm_sockets[n].has_address(ip_address)) break;
     }
-    addresses.erase(addresses.begin() + n);
-    network::socket toremove = comm_sockets[n];
+    auto toremove = comm_sockets[n];
     comm_sockets.erase(comm_sockets.begin() + n);
-    toremove.close();
-    names.erase(names.begin() + n);
+    toremove.close_connection();
 }
 
-network::socket client::move_to_comm(uint32_t ip_address, std::string name) {
+void client::move_to_comm(uint32_t ip_address, std::string name) {
   network::socket result = couriers[0];
-  comm_sockets.push_back(result);
-  addresses.push_back(ip_address);
-  names.push_back(name);
+  user u { ip_address, result, name };
+
+  comm_sockets.push_back(u);
   couriers.erase(couriers.begin());
-  return result;
 }
 
 void client::send(std::string message) {

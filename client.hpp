@@ -4,11 +4,13 @@
 #include <vector>
 
 #include "socket.hpp"
+#include "user.hpp"
 
 class client {
   public:
     client(std::string name, unsigned int addr, unsigned int socket) :
-      _name(name), interface(network::socket::bound(socket, 10)),
+      _name(name),
+      interface(network::socket::bound(socket, 10)),
       _ip_address(addr) { }
 
     /**
@@ -45,7 +47,7 @@ class client {
     /**
     * Move the one in couriers list into the comm_list
     */
-    network::socket move_to_comm(uint32_t ip_address, std::string name);
+    void move_to_comm(uint32_t ip_address, std::string name);
 
     void make_courier(network::socket newCourier);
 
@@ -53,10 +55,6 @@ class client {
     * Send the message to the one in couriers list
     */
     void sendtoOne(const std::string message);
-
-    std::vector<uint32_t> getaddresses() { return addresses; }
-
-    std::vector<std::string> getnames() { return names; }
 
     unsigned int ip_address() { return _ip_address; }
 
@@ -75,14 +73,11 @@ class client {
     network::socket interface;
     unsigned int _ip_address;
 
-
     uint64_t _room_id;
     std::string _room_name;
 
     std::vector<network::socket> couriers;
-    std::vector<network::socket> comm_sockets;
-    std::vector<uint32_t> addresses;
-    std::vector<std::string> names;
+    std::vector<user> comm_sockets;
 };
 
 #endif
