@@ -3,6 +3,7 @@
 #include "message.hpp"
 #include "invite_request.hpp"
 #include "chat_ack.hpp"
+#include "client.hpp"
 
 using namespace std;
 
