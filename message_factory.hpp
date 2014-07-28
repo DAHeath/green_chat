@@ -32,22 +32,27 @@ class message_factory {
     }
     message build_add_list_update(
         uint64_t room_id,
+        std::string room_name,
         std::vector<uint32_t> addresses,
         std::vector<std::string> names) {
       return message::from_body(
-          addr, 1, new list_update(room_id, addresses, names));
+          addr, 1, new list_update(room_id, room_name, addresses, names));
     }
     message build_remove_list_update(
         uint64_t room_id,
+        std::string room_name,
         std::vector<uint32_t> addresses,
         std::vector<std::string> names) {
       return message::from_body(
-          addr, 0, new list_update(room_id, addresses, names));
+          addr, 0, new list_update(room_id, room_name, addresses, names));
     }
     message build_chat_message(
-        uint64_t room_id, uint32_t timestamp, std::string text) {
+        uint64_t room_id,
+        uint32_t timestamp,
+        std::string name,
+        std::string text) {
       return message::from_body(
-          addr, 0, new chat_message(room_id, timestamp, text));
+          addr, 0, new chat_message(room_id, timestamp, name, text));
     }
     message build_chat_ack(uint64_t room_id, uint32_t timestamp) {
       return message::from_body(addr, 0, new chat_ack(room_id, timestamp));

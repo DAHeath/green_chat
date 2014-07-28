@@ -21,8 +21,8 @@ class client {
      * Allows a client to establish a connection with another client who there
      * has yet to be any contact with. Bypasses the courier process.
      */
-    void add_neighbor(user u) { roommates.push_back(u); }
-    void remove_neighbor(uint32_t ip_address);
+    void add_roommate(user u) { roommates.push_back(u); }
+    void remove_roommate(uint32_t ip_address);
     void add_courier(network::socket s) { couriers.push_back(s); }
     void remove_courier(uint32_t address);
 
@@ -55,13 +55,16 @@ class client {
 
     uint64_t room_id() { return _room_id; }
     std::string room_name() { return _room_name; }
-    bool in_room() { return _room_name == ""; }
+    bool in_room() { return _room_name != ""; }
+    bool in_room(uint64_t room_id) { return _room_id == room_id; }
 
     void close_connections() {
       interface.close();
       for (auto s : couriers) s.close();
       for (auto u : roommates) u.close_connection();
     }
+
+    bool has_roommate(uint32_t address, std::string name);
 
 
   private:
@@ -70,6 +73,8 @@ class client {
     void send_names_list_to_new_user(user u);
     void send_new_user_to_room(user u);
     void move_user_to_room(user u);
+    void respond_to_update(message &m);
+    void add_appropriate_users(list_update *lu);
 
     network::socket courier_at(uint32_t address);
 

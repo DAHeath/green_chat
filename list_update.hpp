@@ -14,14 +14,17 @@ class list_update : public message_body {
 
     list_update(
         uint64_t room_id,
+        std::string room_name,
         std::vector<uint32_t> addresses,
         std::vector<std::string> names) :
       _room_id(room_id),
+      _room_name(room_name),
       _addresses(addresses),
       _names(names) { }
 
 
     uint64_t room_id() const { return _room_id; }
+    std::string room_name() const { return _room_name; }
     std::vector<uint32_t> addresses() const { return _addresses; }
     std::vector<std::string> names() const { return _names; }
 
@@ -30,6 +33,7 @@ class list_update : public message_body {
 
     bool operator==(const list_update &other) {
       return room_id()   == other.room_id() &&
+             room_name() == other.room_name() &&
              addresses() == other.addresses() &&
              names()     == other.names();
     }
@@ -41,6 +45,7 @@ class list_update : public message_body {
 
   private:
     uint64_t _room_id;
+    std::string _room_name;
     std::vector<uint32_t> _addresses;
     std::vector<std::string> _names;
 };
