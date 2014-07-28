@@ -51,7 +51,7 @@ class client {
     }
 
     std::string name() { return _name; }
-    std::string set_name(std::string name) { _name = name; }
+    void set_name(std::string name) { _name = name; }
 
     uint64_t room_id() { return _room_id; }
     std::string room_name() { return _room_name; }
