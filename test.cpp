@@ -71,17 +71,11 @@ void test_chat_ack(client c1, client c2, message_factory f) {
   test(c1, c2, f.build_chat_ack(room_id, timestamp));
 }
 
-void run(string address) {
-  uint32_t addr = network::interpret_address(address);
-
-  message_factory f { addr };
-
-  auto c1 = client("David", addr, 3456);
-  auto c2 = client("Other", addr, 4567);
-  auto c3 = client("Dude", addr, 6789);
-
-  c1.add_courier(network::socket::connected(addr, 4567));
-  c2.accept();
+void test_room_request_response(
+    client &c1,
+    client &c2,
+    message_factory &f,
+    uint32_t addr) {
 
   c2.set_room(45678, "ROOM!");
   c1.send_to_courier(addr, f.build_room_query().to_string());
@@ -94,29 +88,73 @@ void run(string address) {
   auto s2 = c1.receive_from_courier();
 
   auto m2 = message::from_string(s2);
-  std::cerr << m2.header().type << "\n";
-  auto &rl = (room_list&)m2.body();
-  std::cerr << rl.names()[0] << "\n";
+  auto *rl = (room_list*)m2.body();
+
+  assert (rl->names()[0] == "ROOM!");
+}
+
+void test_invite_request_response(
+    client &c1,
+    client &c2,
+    message_factory f,
+    uint32_t addr) {
+
+  c2.set_room(45678, "ROOM!");
+  c1.send_to_courier(addr,
+      f.build_invite_request(45678, "ROOM!", "David").to_string());
+
+  auto s = c2.receive_from_courier();
+  auto m = message::from_string(s);
+
+  c2.process_message(m);
+
+  auto s2 = c1.receive_from_courier();
+  auto m2 = message::from_string(s2);
+  auto lu = (list_update*)m2.body();
+
+  assert (lu->names()[0] == "Blah");
+}
+
+void run(string address) {
+  uint32_t addr = network::interpret_address(address);
+
+  message_factory f { addr };
+
+  auto c1 = client("David", addr, 3456);
+  auto c2 = client("Other", addr, 4567);
+
+  user u { addr, 4567, "NEIGHBOR" };
+  c1.add_neighbor(u);
+  c2.accept();
 
 
+  test_room_query(c1, c2, f);
+  test_room_list(c1, c2, f);
+  test_invite_request(c1, c2, f);
 
-  /* user u { addr, 4567, "NEIGHBOR" }; */
-  /* c1.add_neighbor(u); */
-  /* c2.accept(); */
+  test_list_update(c1, c2, f);
+  test_chat_message(c1, c2, f);
+  test_chat_ack(c1, c2, f);
 
-  /* test_room_query(c1, c2, f); */
-  /* test_room_list(c1, c2, f); */
-  /* test_invite_request(c1, c2, f); */
+  c1.close_connections();
+  c2.close_connections();
 
-  /* test_list_update(c1, c2, f); */
-  /* test_chat_message(c1, c2, f); */
-  /* test_chat_ack(c1, c2, f); */
+  c1 = client("David", addr, 5678);
+  c2 = client("Blah", addr, 6789);
+  c1.add_courier(network::socket::connected(addr, 6789));
+  c2.accept();
 
-  /* auto u1 = user(addr, 6789, "Bob"); */
-  /* c3.accept(); */
+  test_room_request_response(c1, c2, f, addr);
 
-  /* u1.send("Sup"); */
-  /* cerr << c3.receive() << "\n"; */
+  c1.close_connections();
+  c2.close_connections();
+
+  c1 = client("David", addr, 5678);
+  c2 = client("Blah", addr, 6789);
+  c1.add_courier(network::socket::connected(addr, 6789));
+  c2.accept();
+
+  test_invite_request_response(c1, c2, f, addr);
 }
 
 int main(int argc, char *argv[]) {

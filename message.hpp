@@ -23,11 +23,11 @@ class message {
       return _header->to_string() + _body->to_string();
     }
 
-    message_header &header() const { return *_header; }
-    message_body &body() const { return *_body; }
+    message_header *header() const { return _header; }
+    message_body *body() const { return _body; }
 
     bool operator==(const message &other) {
-      return body() == other.body() && header() == other.header();
+      return *(body()) == *(other.body()) && *(header()) == *(other.header());
     }
     bool operator!=(const message &other) { return !(*this==other); }
 

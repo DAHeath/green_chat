@@ -15,7 +15,7 @@ class client {
       _ip_address(addr),
       _f(message_factory(addr)){ }
 
-    void process_message(message m);
+    void process_message(message &m);
 
     /**
      * Allows a client to establish a connection with another client who there
@@ -55,6 +55,12 @@ class client {
     uint64_t room_id() { return _room_id; }
     std::string room_name() { return _room_name; }
     bool in_room() { return _room_name == ""; }
+
+    void close_connections() {
+      interface.close();
+      for (auto s : couriers) s.close();
+      for (auto u : roommates) u.close_connection();
+    }
 
 
   private:

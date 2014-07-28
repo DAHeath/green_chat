@@ -5,9 +5,9 @@
 
 using namespace std;
 
-void client::process_message(message m) {
-  auto sender_ip = m.header().address;
-  switch (m.header().type) {
+void client::process_message(message &m) {
+  auto sender_ip = m.header()->address;
+  switch (m.header()->type) {
     case message_type::ROOM_QUERY:
       send_room_list(sender_ip);
       break;
@@ -17,9 +17,9 @@ void client::process_message(message m) {
       break;
 
     case message_type::LIST_UPDATE:
-      auto lu = (list_update&)m.body();
-      if (lu.room_id() == room_id()) {
-        for (unsigned int i = 0; i < lu.addresses().size(); i++) {
+      auto lu = (list_update*)m.body();
+      if (lu->room_id() == room_id()) {
+        for (unsigned int i = 0; i < lu->addresses().size(); i++) {
         }
       }
     break;
@@ -39,9 +39,9 @@ void client::send_room_list(uint32_t address) {
 }
 
 void client::respond_to_invite(message &m) {
-  auto ir = (invite_request&)m.body();
-  if (ir.id() == room_id()) {
-    user u { m.header().address, courier_at(m.header().address), ir.user_name() };
+  auto ir = (invite_request*)m.body();
+  if (ir->id() == room_id()) {
+    user u { m.header()->address, courier_at(m.header()->address), ir->user_name() };
 
     send_names_list_to_new_user(u);
     send_new_user_to_room(u);
