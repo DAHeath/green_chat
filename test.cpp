@@ -53,7 +53,7 @@ void test_list_update(client c1, client c2, message_factory f) {
   vector<uint32_t> addresses { 0x3333, 0x33333333 };
   vector<string> names { "User1", "Superdupername!" };
 
-  test(c1, c2, f.build_add_list_update(room_id, addresses, names));
+  test(c1, c2, f.build_add_list_update(room_id, "Room1", addresses, names));
 }
 
 void test_chat_message(client c1, client c2, message_factory f) {
@@ -61,7 +61,7 @@ void test_chat_message(client c1, client c2, message_factory f) {
   uint32_t timestamp { 0x13231323 };
   string mes { "This is just a test message." };
 
-  test(c1, c2, f.build_chat_message(room_id, timestamp, mes));
+  test(c1, c2, f.build_chat_message(room_id, timestamp, "Sender", mes));
 }
 
 void test_chat_ack(client c1, client c2, message_factory f) {
@@ -110,9 +110,40 @@ void test_invite_request_response(
 
   auto s2 = c1.receive_from_courier();
   auto m2 = message::from_string(s2);
+
+  c1.process_message(m2);
   auto lu = (list_update*)m2.body();
 
-  assert (lu->names()[0] == "Blah");
+  assert (lu->names()[0] == c2.name());
+  assert (c2.has_roommate(c1.ip_address(), c1.name()));
+  assert (c1.has_roommate(c2.ip_address(), c2.name()));
+}
+
+void test_send_message(
+    client &c1,
+    client &c2,
+    message_factory &f,
+    uint32_t addr) {
+
+  c1.set_room(45678, "Room!");
+
+  user u = user { addr, 7890, "User2" };
+  c1.add_roommate(u);
+
+  cerr << "HERE\n";
+  c2.accept();
+  cerr << "HERE\n";
+
+  auto s = f.build_chat_message(c1.room_id(), 0, c1.name(), "HEY!").to_string();
+  cerr << s << "\n";
+  c1.send(s);
+  c2.set_room(45678, "Room!");
+
+  auto s2 = c2.receive_from_courier();
+  cerr << s2 << "\n";
+
+  auto m = message::from_string(s2);
+  c2.process_message(m);
 }
 
 void run(string address) {
@@ -124,7 +155,7 @@ void run(string address) {
   auto c2 = client("Other", addr, 4567);
 
   user u { addr, 4567, "NEIGHBOR" };
-  c1.add_neighbor(u);
+  c1.add_roommate(u);
   c2.accept();
 
 
@@ -155,6 +186,16 @@ void run(string address) {
   c2.accept();
 
   test_invite_request_response(c1, c2, f, addr);
+
+  c1.close_connections();
+  c2.close_connections();
+
+  c1 = client("David", addr, 4321);
+  c2 = client("Blah", addr, 7890);
+
+  test_send_message(c1, c1, f, addr);
+
+
 }
 
 int main(int argc, char *argv[]) {

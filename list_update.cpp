@@ -11,9 +11,14 @@ list_update *list_update::from_string(string body) {
   uint64_t room_id = bit::extract64(body);
   body = body.substr(8);
 
+  unsigned int divide = body.find('\0') + 1;
+  auto room_name = body.substr(0, divide-1);
+
+  body = body.substr(divide);
+
   vector<uint32_t> addresses;
   vector<string> names;
-  unsigned int divide = 0;
+  divide = 0;
   do {
     body = body.substr(divide);
     addresses.push_back(bit::extract32(body));
@@ -23,7 +28,7 @@ list_update *list_update::from_string(string body) {
     names.push_back(body.substr(0, divide-1));
   } while (divide < body.size());
 
-  return new list_update { room_id, addresses, names };
+  return new list_update { room_id, room_name, addresses, names };
 }
 
 uint32_t list_update::length() const {
@@ -35,6 +40,7 @@ uint32_t list_update::length() const {
 string list_update::to_string() const {
   ostringstream ss;
   bit::insert64(ss, _room_id);
+  ss << _room_name << '\0';
   for (unsigned int i = 0; i < _names.size(); i++) {
     bit::insert32(ss, _addresses[i]);
     ss << _names[i] << '\0';
