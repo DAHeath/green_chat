@@ -193,7 +193,7 @@ void run(string address) {
   c1 = client("David", addr, 4321);
   c2 = client("Blah", addr, 7890);
 
-  test_send_message(c1, c1, f, addr);
+  test_send_message(c1, c2, f, addr);
 
 
 }
